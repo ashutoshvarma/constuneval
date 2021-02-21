@@ -60,7 +60,7 @@ where
 /// # Examples
 ///
 /// ```
-/// use constuneval::uneval_cow::UnevalCow;
+/// use constuneval::UnevalCow;
 ///
 /// fn abs_all(input: &mut UnevalCow<[i32]>) {
 ///     for i in 0..input.len() {
@@ -90,7 +90,7 @@ where
 /// Another example showing how to keep `UnevalCow` in a struct:
 ///
 /// ```
-/// use constuneval::uneval_cow::UnevalCow;
+/// use constuneval::UnevalCow;
 ///
 /// struct Items<'a, X: 'a> where [X]: ToOwned<Owned = Vec<X>> {
 ///     values: UnevalCow<'a, [X]>,
@@ -176,7 +176,7 @@ impl<B: ?Sized + ToOwned> UnevalCow<'_, B> {
     /// and becomes a `UnevalCow::Owned`:
     ///
     /// ```
-    /// use constuneval::uneval_cow::UnevalCow;
+    /// use constuneval::UnevalCow;
     ///
     /// let s = "Hello world!";
     /// let cow = UnevalCow::Borrowed(s);
@@ -190,7 +190,7 @@ impl<B: ?Sized + ToOwned> UnevalCow<'_, B> {
     /// Calling `into_owned` on a `UnevalCow::Owned` is a no-op:
     ///
     /// ```
-    /// use constuneval::uneval_cow::UnevalCow;
+    /// use constuneval::UnevalCow;
     ///
     /// let s = "Hello world!";
     /// let cow: UnevalCow<str> = UnevalCow::Owned(String::from(s));

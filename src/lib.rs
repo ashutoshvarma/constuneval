@@ -88,7 +88,7 @@ use std::fs::File;
 use std::io;
 use std::io::prelude::*;
 
-pub mod uneval_cow;
+mod uneval_cow;
 
 pub use uneval_cow::UnevalCow;
 
