@@ -3,24 +3,24 @@
 //! ## Usage
 //! In general, to embed some code(tables/struct) into crate, you have to use the build script
 //! and [`include!`][include] macro. Inside the build script, you'll generate
-//! some code with one of the [to_file()][to_file], [to_string()][to_string] 
+//! some code with one of the [to_file()][to_file], [to_string()][to_string]
 //! provided by `constuneval`,
 //! and then include the generated file, like this:
 //! ```ignore
 //! include!(concat!(env!(OUT_DIR), "/file_name.rs"));
 //! ```
-//! 
+//!
 //! Also this crate provides a fork of [UnevalCow]
 //! but with better serialization though Debug trait
 //!
 //! ## How does it work?
-//! 
+//!
 //! To keep things simple all the formatting/serialization is done with help
 //! of Debug trait. For most types such as `struct`, `enum`, `Vec`, etc it
-//! works fine, but not for `Deref` like types like `Cow` as their Debug essentially 
-//! deref before formatting. To address this crate also provides [UnevalCow] as a 
+//! works fine, but not for `Deref` like types like `Cow` as their Debug essentially
+//! deref before formatting. To address this crate also provides [UnevalCow] as a
 //! substitute to [std::borrow::Cow].
-//! 
+//!
 //! Of course, we can't always directly construct the code for the desired value (more on this
 //! in the [Limitations](#limitations) section below).
 //!
@@ -37,7 +37,7 @@
 //! {
 //!     pub some_table: UnevalCow<'static, [UnevalCow<'static, [F]>]>,
 //! }
-//! 
+//!
 //! // some build time generated struct table
 //! let fft_temp = FftDomain {
 //!     some_table: UnevalCow::Owned(vec![
@@ -49,8 +49,8 @@
 //!         UnevalCow::Owned(vec![1, 2, 3, 4, 5]),
 //!     ]),
 //! };
-//! 
-//! 
+//!
+//!
 //! to_file(
 //!     std::path::Path::new("const_fft_tables.rs"),
 //!     "FFT_TABLE",
@@ -59,7 +59,7 @@
 //! )
 //! .expect("Write Failed");
 //! ```
-//! 
+//!
 //! content of `const_fft_tables.rs` (after running rustfmt on it)
 //! ```ignore
 //! const FFT_TABLE: FftDomain<'static, i32> = FftDomain {
@@ -73,17 +73,15 @@
 //!     ]),
 //! };
 //! ```
-//! 
+//!
 //! Now this file/code can be embed into crate using [`include!`][include] macro.
-//! 
+//!
 //! ## Limitations
 //! There are some cases when `constuneval` will be unable to generate valid code. Namely:
 //! 1. This serializer is intended for use with types with well implemented Debug trait. It may not
 //! work if Debug trait is producing invalid outputs.
 //!
 //! [include]: https://doc.rust-lang.org/stable/std/macro.include.html
-
-
 
 use std::fmt;
 use std::fs::File;
@@ -94,7 +92,6 @@ pub mod uneval_cow;
 
 pub use uneval_cow::UnevalCow;
 
-
 /// Obtain string with generated const Rust code.
 pub fn to_string<T: fmt::Debug>(name: &str, value: &T, ty: Option<&str>) -> String {
     let type_name = ty.unwrap_or(std::any::type_name::<T>());
@@ -102,7 +99,7 @@ pub fn to_string<T: fmt::Debug>(name: &str, value: &T, ty: Option<&str>) -> Stri
 }
 
 /// Generate the const Rust code and write it to temporary file
-/// 
+///
 /// When Cargo runs your crate's build task,
 /// it sets the `OUT_DIR` environment variable to the path to build target directory (see
 /// [Cargo reference](https://doc.rust-lang.org/cargo/reference/environment-variables.html) for more).
