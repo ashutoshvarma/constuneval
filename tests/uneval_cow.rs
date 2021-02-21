@@ -61,3 +61,60 @@ fn test_from_cow_path() {
 //     const IS_OWNED: bool = COW.is_owned();
 //     assert!(!IS_OWNED);
 // }
+
+#[test]
+fn test_debug_primitive() {
+    // int
+    assert_eq!(
+        format!("{:?}", UnevalCow::<u64>::Borrowed(&1)),
+        "UnevalCow::Borrowed( &1 )"
+    );
+    assert_eq!(
+        format!("{:?}", UnevalCow::<u64>::Owned(1)),
+        "UnevalCow::Borrowed( &1 )"
+    );
+    // float
+    assert_eq!(
+        format!("{:?}", UnevalCow::<f64>::Borrowed(&3.7_f64)),
+        "UnevalCow::Borrowed( &3.7 )"
+    );
+    assert_eq!(
+        format!("{:?}", UnevalCow::<f64>::Owned(3.7_f64)),
+        "UnevalCow::Borrowed( &3.7 )"
+    );
+
+    // str
+    // assert_eq!(
+    //     format!("{:?}", UnevalCow::<str>::Borrowed("Hello")),
+    //     "UnevalCow::Borrowed( \"Hello\" )"
+    // );
+    assert_eq!(
+        format!("{:?}", UnevalCow::<str>::Owned("Hello".to_string())),
+        "UnevalCow::Borrowed( \"Hello\" )"
+    );
+}
+
+#[test]
+fn test_debug_slice() {
+    // [T]
+    assert_eq!(
+        format!("{:?}", UnevalCow::<[u64]>::Borrowed(&[1, 2, 3])),
+        "UnevalCow::Borrowed( &[1, 2, 3] )"
+    );
+
+    assert_eq!(
+        format!("{:?}", UnevalCow::<[u64]>::Owned(vec![1, 2, 3])),
+        "UnevalCow::Borrowed( &[1, 2, 3] )"
+    );
+
+    // Box<[T]>
+    let box_u64: Box<[u64]> = Box::new([1, 2, 3]);
+    assert_eq!(
+        format!("{:?}", UnevalCow::<Box<[u64]>>::Borrowed(&box_u64)),
+        "UnevalCow::Borrowed( &[1, 2, 3] )"
+    );
+    assert_eq!(
+        format!("{:?}", UnevalCow::<Box<[u64]>>::Owned(box_u64)),
+        "UnevalCow::Borrowed( &[1, 2, 3] )"
+    );
+}
