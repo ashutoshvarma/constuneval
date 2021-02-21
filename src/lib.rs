@@ -25,7 +25,7 @@
 //! in the [Limitations](#limitations) section below).
 //!
 //! ## Example
-//! ```
+//! ```no_run
 //! use constuneval::{to_file, to_string, UnevalCow};
 //! use std::fmt;
 //!

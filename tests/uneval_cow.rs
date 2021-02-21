@@ -84,10 +84,11 @@ fn test_debug_primitive() {
     );
 
     // str
-    // assert_eq!(
-    //     format!("{:?}", UnevalCow::<str>::Borrowed("Hello")),
-    //     "UnevalCow::Borrowed( \"Hello\" )"
-    // );
+    assert_eq!(
+        format!("{:?}", UnevalCow::<str>::Borrowed("Hello")),
+        "UnevalCow::Borrowed( \"Hello\" )"
+    );
+
     assert_eq!(
         format!("{:?}", UnevalCow::<str>::Owned("Hello".to_string())),
         "UnevalCow::Borrowed( \"Hello\" )"

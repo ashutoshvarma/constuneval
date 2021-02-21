@@ -8,8 +8,8 @@ use core::ops::{Add, AddAssign, Deref};
 use std::borrow::ToOwned;
 use std::ffi::{CStr, CString, OsStr, OsString};
 use std::path::{Path, PathBuf};
-use std::sync::Arc;
 use std::rc::Rc;
+use std::sync::Arc;
 
 use std::fmt;
 use std::string::String;
@@ -261,18 +261,27 @@ where
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use core::any::TypeId;
         let ty_id = TypeId::of::<B>();
-        match *self {
-            Borrowed(ref b) => f.write_fmt(format_args!("UnevalCow::Borrowed( &{:?} )", b)),
-            Owned(ref o) => {
-                // if ty_id == TypeId::of::<<B as ToOwned>::Owned>() {
-                //     return f.write_fmt(format_args!("UnevalCow::Owned( {:?} )", o));
-                if ty_id == TypeId::of::<str>() {
-                    return f.write_fmt(format_args!("UnevalCow::Borrowed( {:?} )", o));
-                } else {
-                    return f.write_fmt(format_args!("UnevalCow::Borrowed( &{:?} )", o));
-                }
-            }
+        let res;
+
+        if ty_id == TypeId::of::<str>() {
+            res = f.write_fmt(format_args!("UnevalCow::Borrowed( {:?} )", &**self));
+        } else {
+            res = f.write_fmt(format_args!("UnevalCow::Borrowed( &{:?} )", &**self));
         }
+
+        return res;
+        // match *self {
+        //     Borrowed(ref b) => f.write_fmt(format_args!("UnevalCow::Borrowed( &{:?} )", b)),
+        //     Owned(ref o) => {
+        //         // if ty_id == TypeId::of::<<B as ToOwned>::Owned>() {
+        //         //     return f.write_fmt(format_args!("UnevalCow::Owned( {:?} )", o));
+        //         if ty_id == TypeId::of::<str>() {
+        //             return f.write_fmt(format_args!("UnevalCow::Borrowed( {:?} )", o));
+        //         } else {
+        //             return f.write_fmt(format_args!("UnevalCow::Borrowed( &{:?} )", o));
+        //         }
+        //     }
+        // }
     }
 }
 
@@ -439,14 +448,12 @@ impl From<UnevalCow<'_, Path>> for Box<Path> {
     }
 }
 
-
 impl<'a> From<UnevalCow<'a, Path>> for PathBuf {
     #[inline]
     fn from(p: UnevalCow<'a, Path>) -> Self {
         p.into_owned()
     }
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // Clone-on-write - src/alloc/string.rs
@@ -605,12 +612,9 @@ where
     }
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // Clone-on-write - src/alloc/rc.rs
 ////////////////////////////////////////////////////////////////////////////////
-
 
 impl<'a, B> From<UnevalCow<'a, B>> for Rc<B>
 where
@@ -626,8 +630,6 @@ where
     }
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Clone-on-write - src/alloc/boxed.rs
 ////////////////////////////////////////////////////////////////////////////////
-
